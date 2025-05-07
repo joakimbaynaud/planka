@@ -94,6 +94,30 @@ export const selectProjectsToListsForCurrentUser = createSelector(
   },
 );
 
+export const selectProjectsToCardsForCurrentUser = createSelector(
+  orm,
+  (state) => selectCurrentUserId(state),
+  ({ User }, id) => {
+    if (!id) {
+      return id;
+    }
+
+    const userModel = User.withId(id);
+
+    if (!userModel) {
+      return userModel;
+    }
+
+    return userModel.getOrderedAvailableProjectsModelArray().map((projectModel) => ({
+      ...projectModel.ref,
+      boards: projectModel.getOrderedBoardsModelArrayForUser(id).map((boardModel) => ({
+        ...boardModel.ref,
+        cards: boardModel.getOrderedCardsQuerySet().toRefArray(),
+      })),
+    }));
+  },
+);
+
 export const selectNotificationsForCurrentUser = createSelector(
   orm,
   (state) => selectCurrentUserId(state),
@@ -129,5 +153,6 @@ export default {
   selectCurrentUser,
   selectProjectsForCurrentUser,
   selectProjectsToListsForCurrentUser,
+  selectProjectsToCardsForCurrentUser,
   selectNotificationsForCurrentUser,
 };

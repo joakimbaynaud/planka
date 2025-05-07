@@ -141,7 +141,9 @@ export default class extends BaseModel {
         });
 
         payload.cardMemberships.forEach(({ cardId, userId }) => {
-          Card.withId(cardId).users.add(userId);
+          try {
+            Card.withId(cardId).users.add(userId);
+          } catch {} // eslint-disable-line no-empty
         });
 
         payload.cardLabels.forEach(({ cardId, labelId }) => {
